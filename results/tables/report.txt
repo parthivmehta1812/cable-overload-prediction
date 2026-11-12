@@ -1,0 +1,28 @@
+STEP 1 - Household profiles (one row per minute, W)
+  Shape of the raw data: (44640, 4) (31 days x 1440 minutes, 4 houses)
+  Maximum per house [W]: H1 4359, H2 4516, H3 4511, H4 4678
+
+STEP 2 - Total load vs. the 2.5 kW feeder limit
+  Minutes above the limit: 3799 of 44640; highest total 9513 W
+
+STEP 3 - Hourly averages, features and labels
+  744 hourly values -> X (720, 5) (features: load 1, 2, 3, 4 and 24 h before), y (720,)
+  Overload hours: 31 of 720 (4.3 %) -> very imbalanced data
+
+STEP 4 - 70/30 train/test split
+  y (720,), y_train (504,), y_test (216,)
+  Overloads in training data: 20, in test data: 11
+
+STEP 5 - SVC with equal class weights (training data)
+  Predicted overloads: 1 (true: 20)
+  unbalanced accuracy 0.962, balanced accuracy 0.525, precision 1.000, recall 0.050
+
+STEP 6 - SVC with overload weight 24 (= ratio of normal to overload samples)
+  unbalanced accuracy 0.940, balanced accuracy 0.969, precision 0.400, recall 1.000
+
+STEP 7 - Lowest weight without missed overloads (training data)
+  False negatives first reach 0 at weight 9: unbalanced accuracy 0.950, balanced accuracy 0.974, precision 0.444, recall 1.000
+
+STEP 8 - SVC (weight 24) on the test data
+  train: unbalanced accuracy 0.940, balanced accuracy 0.969, precision 0.400, recall 1.000
+  test : unbalanced accuracy 0.875, balanced accuracy 0.848, precision 0.265, recall 0.818
